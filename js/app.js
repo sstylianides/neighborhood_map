@@ -76,7 +76,7 @@ function getYelpInfo(place) {
 		term: place.name,
 		location: 'Orange County, CA',
 		limit: 1
-	}
+	};
 
 	// Generate Oauth signature
 	var encodedSignature = oauthSignature.generate('GET', yelp_url, params, consumer_secret, token_secret);
