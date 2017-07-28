@@ -1,304 +1,55 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <style>
-      html,
-      body {
-        font-family: Arial, sans-serif;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      .container {
-        height: 100%;
-        position: relative;
-      }
-      input {
-        font-size: 12px;
-      }
-      h1 {
-        color: #525454;
-        font-size: 22px;
-        margin: 0 0 10px 0;
-        text-align: center;
-      }
-      #hide-brew,
-      #show-brew {
-        width: 48%;
-      }
-      #map {
-        bottom:0px;
-        height: 100%;
-        left: 362px;
-        position: absolute;
-        right: 0px;
-      }
-      .options-box {
-        background: #fff;
-        border: 1px solid #999;
-        border-radius: 3px;
-        height: 100%;
-        line-height: 35px;
-        padding: 10px 10px 30px 10px;
-        text-align: left;
-        width: 340px;
-      }
-      #pano {
-        width: 300px;
-        height: 300px;
-      }
-      .text {
-        font-size: 12px;
-      }
-      hr {
-        background: #D0D7D9;
-        height: 1px;
-        margin: 20px 0 20px 0;
-        border: none;
-      }
-      #toggle-drawing {
-        width: 27%;
-        position: relative;
-        margin: 10px;
-      }
-      #zoom-to-area-text {
-        position: relative;
-        width: 70%;
-      }
-      #zoom-to-area {
-        width: 24%;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="options-box">
-        <h1>Find Your OC Brews</h1>
-        <div>
-          <input id="show-brew" type="button" value="Show Breweries">
-          <input id="hide-brew" type="button" value="Hide Breweries">
-          <hr>
-          <span class="text">Draw a shape to search within it for Breweries!</span>
-          <input id="toggle-drawing" type="button" value="Drawing Tools">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Stephan Stylianides">
+	<title>OC Brewery Map</title>
+
+	<link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+	<div class="container-fluid">
+        <div id="wrapper">
+            <div id="sidebar-wrapper">
+                <div class="input-group">
+                    <input class="form-control" placeholder="Search Location" type="text" data-bind="value: filter, valueUpdate: 'afterkeydown'">
+                    <span class="input-group-btn">
+						<button class="btn btn-primary" type="button">
+							<i class="fa fa-filter"></i>
+							Search
+						</button>
+					</span>
+                </div>
+                <ul class="sidebar-nav" data-bind="foreach: filteredPlaces" style="margin-top: 60px;">
+                    <li><a href="#" data-bind="text: name" onclick="clickedMarker(this.innerHTML);"></a></li>
+                </ul>
+            </div>
+            <div id="menu">
+                <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">
+                    <i class="fa fa-bars fa-2x"></i>
+                </a>
+            </div>
         </div>
-        <hr>
-        <div>
-            <input id="zoom-to-area-text" type="text" placeholder="Enter your favorite area of OC!">
-            <input id="zoom-to-area" type="button" value="Zoom">
-      </div>
-      </div>
-      <div id="map"></div>
-    </div>
+        <div id="map"></div>
+	</div>
+
+	<script src="js/libs/knockout.js"></script>
+	<script src="js/libs/oauth-signature.min.js"></script>
+	<script src="js/app.js"></script>
     <script>
-        var map;
-        var polygon = null;
-      // Create a new blank array for all the listing markers.
-        var markers = [];
-        function initMap() {
-        // Constructor creates a new map - only center and zoom are required.
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 33.717471, lng: -117.831143},
-          zoom: 11,
-          //styles: styles,
-          mapTypeControl: false
+        $("#menu-toggle").click(function(e){
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
         });
-        var locations = [
-          {title: 'Anaheim Brewery', location: {lat: 33.832752, lng: -117.912461}},
-          {title: 'Artifex Brewery', location: {lat: 33.449277, lng: -117.605670}},
-          {title: 'Back Street Brewery', location: {lat: 33.800626, lng: -117.895979}},
-          {title: 'Barley Forge Brewery', location: {lat: 33.678782, lng: -117.887987}},
-          {title: 'Beachwood Brewing Taproom', location: {lat: 33.704465, lng: -117.995350}},
-          {title: 'Bootlegger&#39s Brewery', location: {lat: 33.869596, lng: -117.928426}}
-        ];
-        var largeInfowindow = new google.maps.InfoWindow();
-
-        //initialize the drawing manager
-        var drawingManager = new google.maps.drawing.DrawingManager({
-          drawingMode: google.maps.drawing.OverlayType.POLYGON,
-          drawingControl: true,
-          drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_LEFT,
-            drawingModes: [
-            google.maps.drawing.OverlayType.POLYGON
-            ]
-          }
-        });
-       // The following group uses the location array to create an array of markers on initialize.
-
-        var defaultIcon = makeMarkerIcon('0091ff');
-
-        var highlightedIcon = makeMarkerIcon('FFFF24');
-        for (var i = 0; i < locations.length; i++) {
-          // Get the position from the location array.
-          var position = locations[i].location;
-          var title = locations[i].title;
-          // Create a marker per location, and put into markers array.
-          var marker = new google.maps.Marker({
-            position: position,
-            title: title,
-            icon: defaultIcon,
-            animation: google.maps.Animation.DROP,
-            id: i
-          });
-          // Push the marker to our array of markers.
-          markers.push(marker);
-          // Create an onclick event to open an infowindow at each marker.
-          marker.addListener('click', function() {
-            populateInfoWindow(this, largeInfowindow);
-          });
-
-          marker.addListener('mouseover', function() {
-            this.setIcon(highlightedIcon);
-          });
-          marker.addListener('mouseout', function() {
-            this.setIcon(defaultIcon);
-          });
-        }
-        document.getElementById('show-brew').addEventListener('click', showBrew);
-        document.getElementById('hide-brew').addEventListener('click', hideBrew);
-        document.getElementById('toggle-drawing').addEventListener('click', function() {
-          toggleDrawing(drawingManager);
-        });
-        document.getElementById('zoom-to-area').addEventListener('click', function() {
-          zoomToArea();
-        });
-
-        drawingManager.addListener('overlaycomplete', function(event) {
-          if (polygon) {
-            polygon.setMap(null);
-            hideBrew();
-          }
-          drawingManager.setDrawingMode(null);
-          polygon = event.overlay;
-          polygon.setEditable(true);
-          searchWithinPolygon();
-          polygon.getPath().addListener('set_at', searchWithinPolygon);
-          polygon.getPath().addListener('insert_at', searchWithinPolygon);
-        });
-      }
-      // This function populates the infowindow when the marker is clicked. We'll only allow
-      // one infowindow which will open at the marker that is clicked, and populate based
-      // on that markers position.
-    function populateInfoWindow(marker, infowindow) {
-        // Check to make sure the infowindow is not already opened on this marker.
-        if (infowindow.marker != marker) {
-          infowindow.marker = marker;
-          infowindow.setContent('<div>' + marker.title + '</div>');
-          infowindow.open(map, marker);
-          // Make sure the marker property is cleared if the infowindow is closed.
-          infowindow.addListener('closeclick', function() {
-            infowindow.marker = null;
-          });
-          var streetViewService = new google.maps.StreetViewService();
-          var radius = 50;
-
-          function getStreetView(data, status) {
-            if (status == google.maps.StreetViewStatus.OK) {
-              var nearStreetViewLocation = data.location.latLng;
-              var heading = google.maps.geometry.spherical.computeHeading(
-                nearStreetViewLocation, marker.position);
-                infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
-                var panoramaOptions = {
-                  position: nearStreetViewLocation,
-                  pov: {
-                    heading: heading,
-                    pitch: 10
-                  }
-                };
-              var panorama = new google.maps.StreetViewPanorama(
-                document.getElementById('pano'), panoramaOptions);
-            } else {
-              infowindow.setContent('<div>' + marker.title + '</div>' +
-                '<div>No Street View Found</div>');
-            }
-          }
-          streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-          infowindow.open(map, marker);
-        }
-      }
-      // This function will loop through the markers array and display them all.
-      function showBrew() {
-        var bounds = new google.maps.LatLngBounds();
-        // Extend the boundaries of the map for each marker and display the marker
-        for (var i = 0; i < markers.length; i++) {
-          markers[i].setMap(map);
-          bounds.extend(markers[i].position);
-        }
-        map.fitBounds(bounds);
-      }
-      // This function will loop through the listings and hide them all.
-      function hideBrew() {
-        for (var i = 0; i < markers.length; i++) {
-          markers[i].setMap(null);
-        }
-      }
-
-      // This function takes in a COLOR, and then creates a new marker
-      // icon of that color. The icon will be 21 px wide by 34 high, have an origin
-      // of 0, 0 and be anchored at 10, 34).
-      function makeMarkerIcon(markerColor) {
-        var markerImage = new google.maps.MarkerImage(
-          'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-          '|40|_|%E2%80%A2',
-          new google.maps.Size(21, 34),
-          new google.maps.Point(0, 0),
-          new google.maps.Point(10, 34),
-          new google.maps.Size(21,34));
-        return markerImage;
-      }
-      function toggleDrawing(drawingManager) {
-        if (drawingManager.map) {
-          drawingManager.setMap(null);
-          if (polygon) {
-            polygon.setMap(null);
-          }
-        } else {
-          drawingManager.setMap(map);
-        }
-      }
-      function searchWithinPolygon() {
-        for (var i = 0; i < markers.length; i++) {
-          if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
-            markers[i].setMap(map);
-          } else {
-            markers[i].setMap(null);
-          }
-        }
-      }
-
-      // This function takes the input value in the find nearby area text input
-      // locates it, and then zooms into that area. This is so that the user can
-      // show all listings, then decide to focus on one area of the map.
-      function zoomToArea() {
-        // Initialize the geocoder.
-        var geocoder = new google.maps.Geocoder();
-        // Get the address or place that the user entered.
-        var address = document.getElementById('zoom-to-area-text').value;
-        // Make sure the address isn't blank.
-        if (address == '') {
-          window.alert('You must enter an area, or address.');
-        } else {
-          // Geocode the address/area entered to get the center. Then, center the map
-          // on it and zoom in
-          geocoder.geocode(
-            { address: address,
-              componentRestrictions: {administrativeArea: 'Orange County'}
-            }, function(results, status) {
-              if (status == google.maps.GeocoderStatus.OK) {
-                map.setCenter(results[0].geometry.location);
-                map.setZoom(15);
-              } else {
-                window.alert('We could not find that location - try entering a more' +
-                    ' specific place.');
-              }
-            });
-        }
-      }
     </script>
-
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCK_Ksn6K-lHAefvE2pCmRwqJ-YJXmESlA&libraries=drawing,geometry&v=3&callback=initMap">
+	<script async defer
+    src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCK_Ksn6K-lHAefvE2pCmRwqJ-YJXmESlA&callback=initMap" onerror="mapError()">
     </script>
-
-  </body>
+</body>
 </html>
