@@ -170,9 +170,10 @@ function geocodeAddress(geocoder, resultsMap, place) {
 				position: results[0].geometry.location
 			});
 
-			// When a marker was clicked, Yelp API is called.
+			// When a marker was clicked, Yelp API is called and marker bounces.
 			google.maps.event.addListener(place.marker, 'click', function() {
 				getYelpInfo(place);
+				toggleBounce(place.marker);
 
 
 
@@ -216,8 +217,17 @@ function makeMarkerIcon(markerColor) {
         return markerImage;
       }
 
-
-
+//make marker bounce
+function toggleBounce(marker) {
+	if (marker.getAnimation() !== null) {
+		marker.setAnimation(null);
+	} else {
+		marker.setAnimation(google.maps.Animation.BOUNCE);
+		setTimeout(function() {
+			marker.setAnimation(null);
+		}, 1400);
+	}
+}
 
 /**
 * Open marker info window when corresponding item was clicked.
