@@ -1,23 +1,44 @@
-// function fourSquare(brewery) {
-// 	var foursquare_url = "https://api.yelp.com/v2/search";
-// 	var CLIENT_ID = "FQNQF5YAUGDBPI13XMVAEJF5TNFHM0G2AFLJPE1H5PIPR3ZR";
-// 	var CLIENT_SECRET = "SY2BMP0Q23FRJU5CAE5A3WKOFDBM2MIATEDXCJU1GO2RN4EE";
+var locations = [
+          {title: 'Anaheim Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.832752, lng: -117.912461}},
+          {title: 'Artifex Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.449277, lng: -117.605670}},
+          {title: 'Back Street Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.800626, lng: -117.895979}},
+          {title: 'Barley Forge Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.678782, lng: -117.887987}},
+          {title: 'Beachwood Brewing Taproom', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.704465, lng: -117.995350}},
+          {title: 'Bootlegger&#39s Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.869596, lng: -117.928426}}
+        ];
 
 
 
+function fourSquare(marker) {
+	var foursquare_url = "";
+	var CLIENT_ID = "FQNQF5YAUGDBPI13XMVAEJF5TNFHM0G2AFLJPE1H5PIPR3ZR";
+	var CLIENT_SECRET = "SY2BMP0Q23FRJU5CAE5A3WKOFDBM2MIATEDXCJU1GO2RN4EE";
 
-// $.ajax({
-// 	url: 'https://api.foursquare.com/v2/venues/explore?',
-// 	datatype: 'json'
-// 	data: 'll='+ locations[0].location +','+ locations[1].location +
-//                 '&?client_id='+ CLIENT_ID +
-//                 '&client_secret='+ CLIENT_SECRET +
-//                 '&query=beer',
+for (var i = 0; i < locations.length; i++) {
+          // Get the position from the location array.
+          var lng = locations[i].location.lng;
+          var lat = locations[i].location.lat;
+      }
 
-// });
 
-// }
+console.log(marker)
 
+$.ajax({
+	url: 'https://api.foursquare.com/v2/venues/' + marker.id,
+	datatype: 'json',
+	data: {client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        v: 20170809}
+
+}).done(function(data) {
+// 	var result = data.response.venue;
+console.log(data)
+	var contentString = '<div><h3>'+ data.response.venue.name + '</h3></div>';
+		largeInfowindow.setContent(contentString);
+		largeInfowindow.open(map, marker);
+ })
+
+}
 // var Places = [
 // 	{
 // 		name: 'Anaheim Brewery',
@@ -67,6 +88,7 @@
 // ];
 
 var map;
+var largeInfowindow;
       // Create a new blank array for all the listing markers.
         var markers = [];
         function initMap() {
@@ -77,15 +99,7 @@ var map;
           //styles: styles,
           mapTypeControl: false
         });
-        var locations = [
-          {title: 'Anaheim Brewery', location: {lat: 33.832752, lng: -117.912461}},
-          {title: 'Artifex Brewery', location: {lat: 33.449277, lng: -117.605670}},
-          {title: 'Back Street Brewery', location: {lat: 33.800626, lng: -117.895979}},
-          {title: 'Barley Forge Brewery', location: {lat: 33.678782, lng: -117.887987}},
-          {title: 'Beachwood Brewing Taproom', location: {lat: 33.704465, lng: -117.995350}},
-          {title: 'Bootlegger&#39s Brewery', location: {lat: 33.869596, lng: -117.928426}}
-        ];
-        var largeInfowindow = new google.maps.InfoWindow();
+        largeInfowindow = new google.maps.InfoWindow();
        // The following group uses the location array to create an array of markers on initialize.
 
         var defaultIcon = makeMarkerIcon('0091ff');
@@ -101,11 +115,12 @@ var map;
             map: map,
             icon: defaultIcon,
             animation: google.maps.Animation.DROP,
-            id: i
+            id: locations[i].id
           });
           // Push the marker to our array of markers.
           markers.push(marker);
-
+          locations[i].marker = marker
+          console.log(locations[i])
 
           // Create an onclick event to open an infowindow at each marker.
           marker.addListener('click', function() {
@@ -127,15 +142,16 @@ var map;
         if (infowindow.marker != marker) {
           infowindow.marker = marker;
           // this is where I plug in foursquare API data to infowindow
-          infowindow.setContent('<div>' + marker.title + '</div>');
-          infowindow.open(map, marker);
+          console.log(marker)
+          fourSquare(marker)
+          // fourSquare(brewery)
           // Make sure the marker property is cleared if the infowindow is closed.
           google.maps.event.addListener(map, 'click', function() {
             infowindow.close();
 
           });
 
-          infowindow.open(map, marker);
+          // infowindow.open(map, marker);
         }
       }
       // This function takes in a COLOR, and then creates a new marker
@@ -151,3 +167,15 @@ var map;
           new google.maps.Size(21,34));
         return markerImage;
       }
+
+var ViewModel = function() {
+var self = this
+this.places = ko.observableArray(locations)
+this.filter = ko.observable()
+// this.vplaces = ko.computed(function() {
+// return ko.utils.arrayFilter(this.places(), function(places) {
+//         return places.done() === true;
+//     });
+// });
+};
+ko.applyBindings(new ViewModel())
