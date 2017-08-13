@@ -170,12 +170,38 @@ var largeInfowindow;
 
 var ViewModel = function() {
 var self = this
-this.places = ko.observableArray(locations)
-this.filter = ko.observable()
-// this.vplaces = ko.computed(function() {
-// return ko.utils.arrayFilter(this.places(), function(places) {
-//         return places.done() === true;
-//     });
-// });
+this.search = ko.observable('');
+this.places = ko.computed(function() {
+    var search_value_lowered = self.search().toLowerCase();
+    if(search_value_lowered==""){
+        locations.forEach(function(location){
+            if(location.marker){
+                location.marker.setVisible(true);
+            }
+        });
+        return locations;
+    } else{
+        var filteredList = [];
+        var found = [];
+        locations.forEach(function(location){
+            var location_name_lowered=location.title.toLowerCase();
+            var similar = [];
+            for(i=0; i<search_value_lowered.length;i++){
+               if(search_value_lowered[i]===location_name_lowered[i]){
+                    similar.push("1");
+                }else{
+                    similar.push("0");
+                }
+            }
+            if(similar.indexOf("0")==-1){
+                location.marker.setVisible(true);
+                    filteredList.push(location);
+                }else{
+                    location.marker.setVisible(false);
+                }
+        });
+        return filteredList;
+    }
+});
 };
 ko.applyBindings(new ViewModel())
