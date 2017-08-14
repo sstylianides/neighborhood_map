@@ -14,17 +14,20 @@
 </head>
   <body>
     <div class="container-fluid">
-      <div class="options-box">
-        <h1>Find Your OC Brews</h1>
-        <input type="text" data-bind="textInput: search">
-        <ul data-bind="foreach: places">
-          <li data-bind="text: title" onclick="">
-          </li>
-          </ul>
-
-        <div>
-      </div>
-      </div>
+      <div id="wrapper">
+        <div id="sidebar-wrapper">
+          <div class="input-group">
+            <h1>Find your OC Brews</h1>
+              <input class="form-control" placeholder="Filter by Location" type="text" data-bind="textInput: search">
+          </div>
+          </div>
+            <ul class="sidebar-nav" data-bind="foreach: places">
+                <li data-bind="text: title" style="margin-top: 20px;">
+                    <a href="#" data-bind="text: name" onclick="">
+                    </a>
+                </li>
+            </ul>
+          </div>
       <div id="map"></div>
     </div>
 
