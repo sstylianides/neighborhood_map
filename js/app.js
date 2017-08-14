@@ -1,10 +1,15 @@
 var locations = [
-          {title: 'Anaheim Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.832752, lng: -117.912461}},
-          {title: 'Artifex Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.449277, lng: -117.605670}},
-          {title: 'Back Street Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.800626, lng: -117.895979}},
-          {title: 'Barley Forge Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.678782, lng: -117.887987}},
-          {title: 'Beachwood Brewing Taproom', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.704465, lng: -117.995350}},
-          {title: 'Bootlegger&#39s Brewery', id: '4df90b6c7d8bc4754071ec40', location: {lat: 33.869596, lng: -117.928426}}
+          {title: "Anaheim Brewery", id: "4df90b6c7d8bc4754071ec40", location: {lat: 33.832752, lng: -117.912461}},
+          {title: "Native Son Alehouse", id: "53cb1b75498e310834cb6030", location: {lat: 33.748257, lng: -117.865189}},
+          {title: "Back Street Brewery", id: "4b6cc5c7f964a5205d532ce3", location: {lat: 33.800626, lng: -117.895979}},
+          {title: "Barley Forge Brewery", id: "53deb8f1498ec09a274c4d61", location: {lat: 33.678782, lng: -117.887987}},
+          {title: "Beachwood Brewing Taproom", id: "582e4dcb65e7c7635d4e6f61", location: {lat: 33.704465, lng: -117.995350}},
+          {title: "Bootlegger's Brewery", id: "4b64d86ff964a5208ed42ae3", location: {lat: 33.869596, lng: -117.928426}},
+          {title: "Bottle Logic Brewing", id: "52a7f795498e83ac59623f48", location: {lat: 33.849545, lng: -117.859775}},
+          {title: "The Bruery", id: "4ff627bbe4b002d4d2f96e3a", location: {lat: 33.862120, lng: -117.880031}},
+          {title: "Noble Ale Works", id: "4ccc94f1ee23a143e72920a8", location: {lat: 33.808483, lng: -117.882833}},
+          {title: "Newport Beach Brewing Co", id: "42926e80f964a5201d241fe3", location: {lat: 33.614467, lng: -117.929811}},
+          {title: "Stereo Brewing", id: "568a5627498e2d846515c546", location: {lat: 33.863208, lng: -117.819493}}
         ];
 
 
@@ -34,6 +39,10 @@ $.ajax({
 // 	var result = data.response.venue;
 console.log(data)
 	var contentString = '<div><h3>'+ data.response.venue.name + '</h3></div>';
+  contentString += '<div><strong>Foursquare Rating: '+ data.response.venue.rating + '</strong></div>';
+  contentString += '<div><strong>Phone: ' + data.response.venue.contact.formattedPhone +'</strong></div>';
+  contentString += '<div><strong>Address:  '+ data.response.venue.location.address + ', ' + data.response.venue.location.city + ', ' + data.response.venue.location.state + ' ' + data.response.venue.location.postalCode +'</strong></div>';
+  contentString += '<div><strong>'+'</strong></div>'
 		largeInfowindow.setContent(contentString);
 		largeInfowindow.open(map, marker);
  })
@@ -95,7 +104,7 @@ var largeInfowindow;
         // Constructor creates a new map - only center and zoom are required.
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 33.717471, lng: -117.831143},
-          zoom: 10,
+          zoom: 11,
           //styles: styles,
           mapTypeControl: false
         });
@@ -144,6 +153,7 @@ var largeInfowindow;
           // this is where I plug in foursquare API data to infowindow
           console.log(marker)
           fourSquare(marker)
+          bounce(marker);
           // fourSquare(brewery)
           // Make sure the marker property is cleared if the infowindow is closed.
           google.maps.event.addListener(map, 'click', function() {
@@ -167,6 +177,14 @@ var largeInfowindow;
           new google.maps.Size(21,34));
         return markerImage;
       }
+
+// makes marker bounce
+function bounce(marker) {
+  marker.setAnimation(google.maps.Animation.BOUNCE);
+  setTimeout(function() {
+      marker.setAnimation(null);
+    }, 1400);
+  }
 
 var ViewModel = function() {
 var self = this
