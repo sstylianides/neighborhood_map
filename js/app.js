@@ -1,3 +1,4 @@
+//locations
 var locations = [
           {title: "Anaheim Brewery", id: "4df90b6c7d8bc4754071ec40", location: {lat: 33.832752, lng: -117.912461}},
           {title: "Native Son Alehouse", id: "53cb1b75498e310834cb6030", location: {lat: 33.748257, lng: -117.865189}},
@@ -13,7 +14,7 @@ var locations = [
         ];
 
 
-
+//calls FourSquare API
 function fourSquare(marker) {
 	var foursquare_url = "";
 	var CLIENT_ID = "FQNQF5YAUGDBPI13XMVAEJF5TNFHM0G2AFLJPE1H5PIPR3ZR";
@@ -26,7 +27,7 @@ for (var i = 0; i < locations.length; i++) {
       }
 
 
-console.log(marker)
+
 
 $.ajax({
 	url: 'https://api.foursquare.com/v2/venues/' + marker.id,
@@ -35,9 +36,10 @@ $.ajax({
         client_secret: CLIENT_SECRET,
         v: 20170809}
 
+//output from data gathered from FourSquare
 }).done(function(data) {
-// 	var result = data.response.venue;
-console.log(data)
+
+
 	var contentString = '<div><h3>'+ data.response.venue.name + '</h3></div>';
   contentString += '<div><strong>Foursquare Rating: '+ data.response.venue.rating + '</strong></div>';
   contentString += '<div><strong>Phone: ' + data.response.venue.contact.formattedPhone +'</strong></div>';
@@ -48,58 +50,13 @@ console.log(data)
  })
 
 }
-// var Places = [
-// 	{
-// 		name: 'Anaheim Brewery',
-//  		address: '336 S Anaheim Blvd, Anaheim, CA 92805'
-// 	},
-// 	{
-// 		name: 'Barley Forge Brewery',
-//  		address: '2957 Randolph Ave, Costa Mesa, CA 92626'
-// 	},
-// 	{
-// 		name: 'Bootleggers Brewery',
-//  		address: '130 S Highland Ave, Fullerton, CA 92832'
-// 	},
-// 	{
-// 		name: 'Bottle Logic Brewing',
-// 		address: '1072 N Armando St, Anaheim, CA 92806'
-// 	},
-// 	{
-// 		name: 'Hoparazzi Brewing Co',
-// 		address: '2910 E La Palma Ave, Anaheim, CA 92806'
-// 	},
-// 	{
-// 		name: 'Noble Ale Works',
-// 		address: '1621 S Sinclair St B, Anaheim, CA 92806'
-// 	},
-// 	{
-// 		name: 'Phantom Ales',
-// 		address: '1211 N Las Brisas St, Anaheim, CA 92806'
-// 	},
-// 	{
-// 		name: 'Stereo Brewing',
-// 		address: '950 S Vía Rodeo, Placentia, CA 92870'
-// 	},
-// 	{
-// 		name: 'The Bruery',
-// 		address: '717 Dunn Way, Placentia, CA 92870'
-// 	},
-// 	{
-// 		name: 'Newport Beach Brewing Co',
-// 		address: '2920 Newport Blvd, Newport Beach, CA 92663'
-// 	},
-// 	{
-// 		name: 'Native Son Alehouse',
-// 		address: '305 E 4th St #200, Santa Ana, CA 92701'
-// 	}
 
-// ];
 
 var map;
 var largeInfowindow;
       // Create a new blank array for all the listing markers.
         var markers = [];
+        //initiate map
         function initMap() {
         // Constructor creates a new map - only center and zoom are required.
         map = new google.maps.Map(document.getElementById('map'), {
@@ -129,7 +86,6 @@ var largeInfowindow;
           // Push the marker to our array of markers.
           markers.push(marker);
           locations[i].marker = marker
-          console.log(locations[i])
 
           // Create an onclick event to open an infowindow at each marker.
           marker.addListener('click', function() {
@@ -153,6 +109,7 @@ var largeInfowindow;
           // this is where I plug in foursquare API data to infowindow
           console.log(marker)
           fourSquare(marker)
+          //bounce marker
           bounce(marker);
           // fourSquare(brewery)
           // Make sure the marker property is cleared if the infowindow is closed.
@@ -186,6 +143,7 @@ function bounce(marker) {
     }, 1400);
   }
 
+//filter function with Kockout
 var ViewModel = function() {
 var self = this
 this.search = ko.observable('');
