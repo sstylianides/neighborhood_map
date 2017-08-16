@@ -22,7 +22,7 @@
           </div>
           </div>
             <ul class="sidebar-nav" data-bind="foreach: places">
-                <li data-bind="text: title" style="margin-top: 20px;">
+                <li data-bind="text: title, click: $root.doSomething" style="margin-top: 20px;">
                     <a href="#" data-bind="text: name" onclick="">
                     </a>
                 </li>

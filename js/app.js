@@ -107,7 +107,7 @@ var largeInfowindow;
         if (infowindow.marker != marker) {
           infowindow.marker = marker;
           // this is where I plug in foursquare API data to infowindow
-          console.log(marker)
+
           fourSquare(marker)
           //bounce marker
           bounce(marker);
@@ -179,5 +179,11 @@ this.places = ko.computed(function() {
         return filteredList;
     }
 });
+ this.doSomething = function(place) {
+    //fourSquare API
+    fourSquare(place.marker)
+    //bounce marker
+    bounce(place.marker);
+};
 };
 ko.applyBindings(new ViewModel())
