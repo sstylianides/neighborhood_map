@@ -86,7 +86,7 @@ var largeInfowindow;
           // Push the marker to our array of markers.
           markers.push(marker);
           locations[i].marker = marker;
-        }
+
           //removed functions within a loop
           // Create an onclick event to open an infowindow at each marker.
           marker.addListener('click', function() {
@@ -98,7 +98,7 @@ var largeInfowindow;
           marker.addListener('mouseout', function() {
             this.setIcon(defaultIcon);
           });
-
+        }
       }
       // This function populates the infowindow when the marker is clicked. We'll only allow
       // one infowindow which will open at the marker that is clicked, and populate based
