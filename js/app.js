@@ -87,6 +87,7 @@ var largeInfowindow;
           markers.push(marker);
           locations[i].marker = marker;
         }
+          //removed functions within a loop
           // Create an onclick event to open an infowindow at each marker.
           marker.addListener('click', function() {
             populateInfoWindow(this, largeInfowindow);
