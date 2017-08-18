@@ -44,10 +44,10 @@ $.ajax({
   contentString += '<div><strong>Foursquare Rating: '+ data.response.venue.rating + '</strong></div>';
   contentString += '<div><strong>Phone: ' + data.response.venue.contact.formattedPhone +'</strong></div>';
   contentString += '<div><strong>Address:  '+ data.response.venue.location.address + ', ' + data.response.venue.location.city + ', ' + data.response.venue.location.state + ' ' + data.response.venue.location.postalCode +'</strong></div>';
-  contentString += '<div><strong>'+'</strong></div>'
+  contentString += '<div><strong>'+'</strong></div>';
 		largeInfowindow.setContent(contentString);
 		largeInfowindow.open(map, marker);
- })
+ });
 
 }
 
@@ -85,8 +85,8 @@ var largeInfowindow;
           });
           // Push the marker to our array of markers.
           markers.push(marker);
-          locations[i].marker = marker
-
+          locations[i].marker = marker;
+        }
           // Create an onclick event to open an infowindow at each marker.
           marker.addListener('click', function() {
             populateInfoWindow(this, largeInfowindow);
@@ -97,7 +97,7 @@ var largeInfowindow;
           marker.addListener('mouseout', function() {
             this.setIcon(defaultIcon);
           });
-        }
+
       }
       // This function populates the infowindow when the marker is clicked. We'll only allow
       // one infowindow which will open at the marker that is clicked, and populate based
@@ -108,7 +108,7 @@ var largeInfowindow;
           infowindow.marker = marker;
           // this is where I plug in foursquare API data to infowindow
 
-          fourSquare(marker)
+          fourSquare(marker);
           //bounce marker
           bounce(marker);
           // fourSquare(brewery)
@@ -145,11 +145,11 @@ function bounce(marker) {
 
 //filter function with Kockout
 var ViewModel = function() {
-var self = this
+var self = this;
 this.search = ko.observable('');
 this.places = ko.computed(function() {
     var search_value_lowered = self.search().toLowerCase();
-    if(search_value_lowered==""){
+    if(search_value_lowered===""){
         locations.forEach(function(location){
             if(location.marker){
                 location.marker.setVisible(true);
@@ -181,9 +181,9 @@ this.places = ko.computed(function() {
 });
  this.doSomething = function(place) {
     //fourSquare API
-    fourSquare(place.marker)
+    fourSquare(place.marker);
     //bounce marker
     bounce(place.marker);
 };
 };
-ko.applyBindings(new ViewModel())
+ko.applyBindings(new ViewModel());
