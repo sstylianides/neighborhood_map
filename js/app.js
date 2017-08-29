@@ -47,13 +47,13 @@ $.ajax({
   contentString += '<div><strong>'+'</strong></div>';
 		largeInfowindow.setContent(contentString);
 		largeInfowindow.open(map, marker);
+ }).fail(function(error){
+  alert('Foursquare did not load')
  });
 
 }
 
-
-var map;
-var largeInfowindow;
+var defaultIcon, highlightedIcon, map, largeInfowindow;
       // Create a new blank array for all the listing markers.
         var markers = [];
         //initiate map
@@ -68,8 +68,8 @@ var largeInfowindow;
         largeInfowindow = new google.maps.InfoWindow();
        // The following group uses the location array to create an array of markers on initialize.
 
-        var defaultIcon = makeMarkerIcon('0091ff');
-        var highlightedIcon = makeMarkerIcon('FFFF24');
+        defaultIcon = makeMarkerIcon('0091ff');
+        highlightedIcon = makeMarkerIcon('FFFF24');
         for (var i = 0; i < locations.length; i++) {
           // Get the position from the location array.
           var position = locations[i].location;
@@ -89,24 +89,28 @@ var largeInfowindow;
 
           //removed functions within a loop
           // Create an onclick event to open an infowindow at each marker.
-          marker.addListener('click', function() {
-            populateInfoWindow(this, largeInfowindow);
-          });
-          marker.addListener('mouseover', function() {
-            this.setIcon(highlightedIcon);
-          });
-          marker.addListener('mouseout', function() {
-            this.setIcon(defaultIcon);
-          });
+          marker.addListener('click', populateInfoWindow);
+          marker.addListener('mouseover', colorIcon);
+          marker.addListener('mouseout', otherColor);
         }
+      }
+
+      function colorIcon() {
+
+        this.setIcon(highlightedIcon);
+      }
+
+      function otherColor() {
+        this.setIcon(defaultIcon);
       }
       // This function populates the infowindow when the marker is clicked. We'll only allow
       // one infowindow which will open at the marker that is clicked, and populate based
       // on that markers position.
-    function populateInfoWindow(marker, infowindow) {
+    function populateInfoWindow() {
         // Check to make sure the infowindow is not already opened on this marker.
-        if (infowindow.marker != marker) {
-          infowindow.marker = marker;
+        var marker = this;
+        if (largeInfowindow.marker != marker) {
+          largeInfowindow.marker = marker;
           // this is where I plug in foursquare API data to infowindow
 
           fourSquare(marker);
@@ -115,7 +119,7 @@ var largeInfowindow;
           // fourSquare(brewery)
           // Make sure the marker property is cleared if the infowindow is closed.
           google.maps.event.addListener(map, 'click', function() {
-            infowindow.close();
+            largeInfowindow.close();
 
           });
 
@@ -143,6 +147,11 @@ function bounce(marker) {
       marker.setAnimation(null);
     }, 1400);
   }
+
+//error message foe google maps
+function errorMessage() {
+  alert('Google Maps did not load properly');
+}
 
 //filter function with Kockout
 var ViewModel = function() {
