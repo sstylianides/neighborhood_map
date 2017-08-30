@@ -48,7 +48,7 @@ $.ajax({
 		largeInfowindow.setContent(contentString);
 		largeInfowindow.open(map, marker);
  }).fail(function(error){
-  alert('Foursquare did not load')
+  alert('Foursquare did not load');
  });
 
 }
