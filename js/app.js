@@ -54,7 +54,7 @@ $.ajax({
     contentString += '<div><strong>Phone: ' + data.response.venue.contact.formattedPhone +'</strong></div>';
   }
 
-  if (data.response.venue.location.address===undefined || data.response.venue.location.city==undefined || data.response.venue.location.state==undefined) {
+  if (data.response.venue.location.address===undefined || data.response.venue.location.city===undefined || data.response.venue.location.state===undefined) {
     contentString += '<div><strong>Address:  '+ "No address provided" +'</strong></div>';
   } else {
     contentString += '<div><strong>Address:  '+ data.response.venue.location.address + ', ' + data.response.venue.location.city + ', ' + data.response.venue.location.state + ' ' + data.response.venue.location.postalCode +'</strong></div>';
