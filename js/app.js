@@ -42,19 +42,19 @@ $.ajax({
   //name of venue
   var contentString = '<div><h3>'+ data.response.venue.name + '</h3></div>';
   //venue rating
-  if (data.response.venue.rating==undefined) {
+  if (data.response.venue.rating===undefined) {
     contentString += '<div><strong>Foursquare Rating: '+ "No rating provided" +'</strong></div>';
   } else {
   contentString += '<div><strong>Foursquare Rating: '+ data.response.venue.rating + '</strong></div>';
   }
   //phone number of venue
-  if (data.response.venue.contact.formattedPhone==undefined) {
+  if (data.response.venue.contact.formattedPhone===undefined) {
     contentString += '<div><strong>Phone: ' + "No phone number provided" +'</strong></div>';
   } else {
     contentString += '<div><strong>Phone: ' + data.response.venue.contact.formattedPhone +'</strong></div>';
   }
 
-  if (data.response.venue.location.address==undefined || data.response.venue.location.city==undefined || data.response.venue.location.state==undefined) {
+  if (data.response.venue.location.address===undefined || data.response.venue.location.city==undefined || data.response.venue.location.state==undefined) {
     contentString += '<div><strong>Address:  '+ "No address provided" +'</strong></div>';
   } else {
     contentString += '<div><strong>Address:  '+ data.response.venue.location.address + ', ' + data.response.venue.location.city + ', ' + data.response.venue.location.state + ' ' + data.response.venue.location.postalCode +'</strong></div>';
